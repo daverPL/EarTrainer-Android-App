@@ -4,28 +4,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.media.AudioFormat;
-import android.media.AudioManager;
-import android.media.AudioTrack;
-import android.os.Handler;
-import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.res.TypedArrayUtils;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.ButtonBarLayout;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.GridLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import net.mabboud.android_tone_player.ContinuousBuzzer;
 import net.mabboud.android_tone_player.OneTimeBuzzer;
-
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
@@ -45,15 +31,6 @@ public class Quiz extends AppCompatActivity {
     int correctAnswers = 0;
     int allAnswers = 0;
     ArrayList <Integer> lastNotes = new ArrayList<>();
-
-    // player:
-    private final double duration = 0.5;
-    private final int sampleRate = 8000;
-
-    private final int numSamples = (int)(duration * sampleRate);
-    private final double sample[] = new double[numSamples];
-    private final byte generatedSnd[] = new byte[2 * numSamples];
-    Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +54,12 @@ public class Quiz extends AppCompatActivity {
 
         ans = getOne();
 
-        play();
+        final Thread thread = new Thread(new Runnable() {
+            public void run() {
+                play();
+            }
+        });
+        thread.start();
 
         for(int i = 0; i < intervalsPositions.size(); i++) {
             final Button btn = new Button(this);
@@ -114,7 +96,12 @@ public class Quiz extends AppCompatActivity {
                     }
                     else {
                         ans = getOne();
-                        play();
+                        final Thread thread = new Thread(new Runnable() {
+                            public void run() {
+                                play();
+                            }
+                        });
+                        thread.start();
                     }
                 }
             });
@@ -157,7 +144,12 @@ public class Quiz extends AppCompatActivity {
                     else {
                         ans = getOne();
 
-                        play();
+                        final Thread thread = new Thread(new Runnable() {
+                            public void run() {
+                                play();
+                            }
+                        });
+                        thread.start();
                     }
                 }
             });
@@ -217,54 +209,32 @@ public class Quiz extends AppCompatActivity {
         }
     }
 
-    void generateTone(double freqOfTone){
-        for (int i = 0; i < numSamples; ++i) {
-            sample[i] = Math.sin(2 * Math.PI * i / (sampleRate/freqOfTone));
-        }
-
-        int idx = 0;
-        for (final double dVal : sample) {
-            final short val = (short) ((dVal * 32767));
-
-            generatedSnd[idx++] = (byte) (val & 0x00ff);
-            generatedSnd[idx++] = (byte) ((val & 0xff00) >>> 8);
-        }
-    }
-
-    void playSound(){
-        final AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC,
-                sampleRate, AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_16BIT, generatedSnd.length,
-                AudioTrack.MODE_STATIC);
-        audioTrack.write(generatedSnd, 0, generatedSnd.length);
-        audioTrack.play();
-    }
-
     void play() {
-        handler.post(new Runnable() {
+        OneTimeBuzzer buzzer = new OneTimeBuzzer();
+        buzzer.setDuration(0.5);
+        buzzer.setToneFreqInHz(frequencies[lastNotes.get(lastNotes.size()-1)]);
+        buzzer.play();
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
             public void run() {
-                generateTone(frequencies[lastNotes.get(lastNotes.size()-1)]);
-                System.out.println("freq: " + frequencies[lastNotes.get(lastNotes.size()-1)]);
-                playSound();
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        generateTone(frequencies[lastNotes.get(lastNotes.size()-2)]);
-                        playSound();
-                    }
-                },  550);
-                if(lastNotes.size()>2) {
-                    Timer timer2 = new Timer();
-                    timer2.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            generateTone(frequencies[lastNotes.get(lastNotes.size()-3)]);
-                            playSound();
-                        }
-                    },  1100);
-                }
+                OneTimeBuzzer buzzer2 = new OneTimeBuzzer();
+                buzzer2.setDuration(0.5);
+                buzzer2.setToneFreqInHz(frequencies[lastNotes.get(lastNotes.size()-2)]);
+                buzzer2.play();
             }
-        });
+        },  500);
+        if(lastNotes.size()>2) {
+            Timer timer2 = new Timer();
+            timer2.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    OneTimeBuzzer buzzer3 = new OneTimeBuzzer();
+                    buzzer3.setDuration(0.5);
+                    buzzer3.setToneFreqInHz(frequencies[lastNotes.get(lastNotes.size()-3)]);
+                    buzzer3.play();
+                }
+            },  1000);
+        }
     }
 }
