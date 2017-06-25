@@ -1,5 +1,6 @@
 package com.example.eartrainer;
 
+import android.content.AbstractThreadedSyncAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -30,7 +31,6 @@ public class Quiz extends AppCompatActivity {
     NamedSequence ans;
     int correctAnswers = 0;
     int allAnswers = 0;
-    ArrayList <Integer> lastNotes = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,11 +52,9 @@ public class Quiz extends AppCompatActivity {
         chordsPositions = intent.getIntegerArrayListExtra("selectedChords");
         numberOfQuestions = intent.getIntExtra("numberOfQuestionsS", numberOfQuestions);
 
-        ans = getOne();
-
         final Thread thread = new Thread(new Runnable() {
             public void run() {
-                play();
+                ans = getOne();
             }
         });
         thread.start();
@@ -95,10 +93,9 @@ public class Quiz extends AppCompatActivity {
                         alertDialog.show();
                     }
                     else {
-                        ans = getOne();
                         final Thread thread = new Thread(new Runnable() {
                             public void run() {
-                                play();
+                                ans = getOne();
                             }
                         });
                         thread.start();
@@ -142,11 +139,10 @@ public class Quiz extends AppCompatActivity {
                         alertDialog.show();
                     }
                     else {
-                        ans = getOne();
 
                         final Thread thread = new Thread(new Runnable() {
                             public void run() {
-                                play();
+                                ans = getOne();
                             }
                         });
                         thread.start();
@@ -193,23 +189,28 @@ public class Quiz extends AppCompatActivity {
 
         if ((chordsPositions.size() == 0 && intervalsPositions.size() > 0) || random < intervalsPositions.size()) {
             int elem = rand.nextInt(intervalsPositions.size());
-            lastNotes.clear();
-            int tone = rand.nextInt(12);
-            lastNotes.add(tone);
-            lastNotes.add(intervals[intervalsPositions.get(elem)].getDistance() + tone);
+            ArrayList <Integer> notes = new ArrayList<>();
+            int tone = rand.nextInt(8);
+            notes.add(tone);
+            notes.add(intervals[intervalsPositions.get(elem)].getDistance() + tone);
+            System.out.println(intervals[intervalsPositions.get(elem)].getShortName());
+            play(notes);
             return intervals[intervalsPositions.get(elem)];
+
         } else {
             int elem = rand.nextInt(chordsPositions.size());
-            lastNotes.clear();
-            int tone = rand.nextInt(12);
-            lastNotes.add(tone);
-            lastNotes.add(chords[chordsPositions.get(elem)].intervals.get(0).getDistance() + lastNotes.get(0));
-            lastNotes.add(chords[chordsPositions.get(elem)].intervals.get(1).getDistance() + lastNotes.get(1));
+            ArrayList <Integer> notes = new ArrayList<>();
+            int tone = rand.nextInt(8);
+            notes.add(tone);
+            notes.add(chords[chordsPositions.get(elem)].intervals.get(0).getDistance() + notes.get(0));
+            notes.add(chords[chordsPositions.get(elem)].intervals.get(1).getDistance() + notes.get(1));
+            System.out.println(chords[chordsPositions.get(elem)].getShortName());
+            play(notes);
             return chords[chordsPositions.get(elem)];
         }
     }
 
-    void play() {
+    void play(final ArrayList<Integer> lastNotes) {
         OneTimeBuzzer buzzer = new OneTimeBuzzer();
         buzzer.setDuration(0.5);
         buzzer.setToneFreqInHz(frequencies[lastNotes.get(lastNotes.size()-1)]);
