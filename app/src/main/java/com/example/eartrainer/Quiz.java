@@ -77,17 +77,7 @@ public class Quiz extends AppCompatActivity {
 
         ans = getOne();
 
-        final Thread thread = new Thread(new Runnable() {
-            public void run() {
-                play();
-            }
-        });
-        thread.start();
-//        OneTimeBuzzer buzzer = new OneTimeBuzzer();
-//        buzzer.setDuration(1);
-//        buzzer.setVolume(50);
-//        buzzer.setToneFreqInHz(440);
-//        buzzer.play();
+        play();
 
         for(int i = 0; i < intervalsPositions.size(); i++) {
             final Button btn = new Button(this);
@@ -124,12 +114,7 @@ public class Quiz extends AppCompatActivity {
                     }
                     else {
                         ans = getOne();
-                        final Thread thread = new Thread(new Runnable() {
-                            public void run() {
-                                play();
-                            }
-                        });
-                        thread.start();
+                        play();
                     }
                 }
             });
@@ -172,12 +157,7 @@ public class Quiz extends AppCompatActivity {
                     else {
                         ans = getOne();
 
-                        final Thread thread = new Thread(new Runnable() {
-                            public void run() {
-                                play();
-                            }
-                        });
-                        thread.start();
+                        play();
                     }
                 }
             });
@@ -261,21 +241,7 @@ public class Quiz extends AppCompatActivity {
     }
 
     void play() {
-
-        final Thread thread = new Thread(new Runnable() {
-            public void run() {
-                generateTone(frequencies[lastNotes.get(lastNotes.size()-1)]);
-                handler.post(new Runnable() {
-
-                    public void run() {
-                        playSound();
-                    }
-                });
-            }
-        });
-        thread.start();
         handler.post(new Runnable() {
-
             public void run() {
                 generateTone(frequencies[lastNotes.get(lastNotes.size()-1)]);
                 System.out.println("freq: " + frequencies[lastNotes.get(lastNotes.size()-1)]);
