@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -22,7 +23,8 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class MainActivity extends AppCompatActivity {
-    Button selectIntervalsButton, selectChordsButton, quizButton;
+    Button selectIntervalsButton, selectChordsButton, quizButton, statsButton;
+    CheckBox upCheckBox, downCheckBox;
     TextView trainingSummary, numberOfQuestions;
     SeekBar questionsSeekBar;
     int questions;
@@ -30,10 +32,11 @@ public class MainActivity extends AppCompatActivity {
     boolean[] checkedChords;
     ArrayList<Integer> selectedIntervalsPositions = new ArrayList<>();
     ArrayList<Integer> selectedChordsPositions = new ArrayList<>();
-    String[] intervalsLabels = {"Perfect unison", "Minor second", "Major second", "Minor third", "Major third", "Perfect fourth",
-            "Augmented fourth", "Diminished fifth", "Perfect fifth", "Minor sixth", "Major sixth", "Minor seventh", "Major seventh", "Perfect octave"};
-    String[] chordsLabels = {"Major Tonica", "Major First", "Major Second", "Minor Tonica", "Minor First", "Minor Second", "Diminished", "Augmented", };
-
+    String[] intervalsLabels = {"Perfect unison (P1)", "Minor second (m2)", "Major second (M2)", "Minor third (m3)", "Major third (M3)", "Perfect fourth (P4)",
+            "Augmented fourth (A4)", "Diminished fifth (D4)", "Perfect fifth (P4)", "Minor sixth (m6)", "Major sixth (M6)", "Minor seventh (m7)", "Major seventh (M7)", "Perfect octave (P8)"};
+    String[] chordsLabels = {"Major Tonica (MTC)", "Major First (M1C)", "Major Second (M2C)", "Minor Tonica (mTC)", "Minor First (m1C)", "Minor Second (m2C)", "Diminished (DC)", "Augmented (AC)", };
+    String[] intervalsLabelsShort = {"P1", "m2", "M2", "m3", "M4", "P4", "A4", "D5", "P5", "m6", "M6", "m7", "M7", "P8"};
+    String[] chordsLabelsShort = {"MTC", "M1C", "M2C", "mTC", "m1C", "m2C", "DC", "AC", };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -43,7 +46,10 @@ public class MainActivity extends AppCompatActivity {
 
         selectIntervalsButton = (Button) findViewById(R.id.btnOrder);
         selectChordsButton = (Button) findViewById(R.id.btnOrderChords);
-        quizButton = (Button) findViewById(R.id.button);
+        quizButton = (Button) findViewById(R.id.quizButton);
+        statsButton = (Button) findViewById(R.id.statsButton);
+        upCheckBox = (CheckBox) findViewById(R.id.upCheckBox);
+        downCheckBox = (CheckBox) findViewById(R.id.downCheckBox);
         trainingSummary = (TextView) findViewById(R.id.tvItemSelected);
         numberOfQuestions = (TextView) findViewById(R.id.numberOfQuestions);
         questionsSeekBar = (SeekBar) findViewById(R.id.seekBar);
@@ -54,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         selectIntervalsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
                 mBuilder.setTitle("Choose intervals:");
                 mBuilder.setMultiChoiceItems(intervalsLabels, checkedIntervals, new DialogInterface.OnMultiChoiceClickListener() {
@@ -102,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         selectChordsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
                 mBuilder.setTitle("Choose chords:");
                 mBuilder.setMultiChoiceItems(chordsLabels, checkedChords, new DialogInterface.OnMultiChoiceClickListener() {
@@ -152,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if(questions == 0) {
                     AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                    alertDialog.setMessage("Number of questions should be greater than 0");
+                    alertDialog.setMessage("Number of questions have to be greater than 0");
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -162,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                     alertDialog.show();
                 } else if(selectedChordsPositions.size() == 0 && selectedIntervalsPositions.size() ==0) {
                     AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                    alertDialog.setMessage("You should choose more than one interval or chord.");
+                    alertDialog.setMessage("You have to choose more than one interval or chord.");
                     alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -170,18 +178,39 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             });
                     alertDialog.show();
-                }
-                else {
+                } else if(upCheckBox.isChecked() == false && downCheckBox.isChecked() == false) {
+                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+                    alertDialog.setMessage("Number of playing directions have to be greater than 0");
+                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                    alertDialog.show();
+                } else {
                     Intent i = new Intent(getApplicationContext(), Quiz.class);
                     i.putExtra("selectedIntervals", selectedIntervalsPositions);
                     i.putExtra("selectedChords", selectedChordsPositions);
                     i.putExtra("numberOfQuestionsS", questions);
+                    i.putExtra("upDirection", upCheckBox.isChecked());
+                    i.putExtra("downDirection", downCheckBox.isChecked());
                     startActivity(i);
                 }
             }
         });
 
+        statsButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), Stats.class);
+                startActivity(i);
+            }
+        });
+
         questionsSeekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 numberOfQuestions.setText(" " + i);
@@ -201,15 +230,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     String prepareSummary() {
+
         if(selectedIntervalsPositions.size() == 0 && selectedChordsPositions.size() == 0) {
             return "You haven't checked any chords and intervals yet.";
         }
         else {
+
             String summary = "";
             if(selectedIntervalsPositions.size() > 0) {
                 summary = summary + "Selected intervals: \n";
                 for (int i = 0; i < selectedIntervalsPositions.size(); i++) {
-                    summary = summary + intervalsLabels[selectedIntervalsPositions.get(i)];
+                    summary = summary + intervalsLabelsShort[selectedIntervalsPositions.get(i)];
                     if (i != selectedIntervalsPositions.size() - 1) {
                         summary = summary + ", ";
                     }
@@ -220,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
             if(selectedChordsPositions.size() > 0) {
                 summary = summary + "Selected chords: \n";
                 for (int i = 0; i < selectedChordsPositions.size(); i++) {
-                    summary = summary + chordsLabels[selectedChordsPositions.get(i)];
+                    summary = summary + chordsLabelsShort[selectedChordsPositions.get(i)];
                     if (i != selectedChordsPositions.size() - 1) {
                         summary = summary + ", ";
                     }

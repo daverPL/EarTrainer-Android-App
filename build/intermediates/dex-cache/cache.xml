@@ -3,21 +3,30 @@
 
     <item
         is-multidex="true"
-        jar="/Users/dawid/Desktop/EarTrainerAndroid/EarTrainer-Android-App/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
-        jumboMode="true"
-        optimize="true"
-        revision="25.0.2"
-        sha1="9c7a127ba047a2ecd585b505389f2dbb6da434cd">
-        <dex dex="/Users/dawid/Desktop/EarTrainerAndroid/EarTrainer-Android-App/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_3dec5fb4d1bef247a70b4358c2129c2b54427ed0/classes.dex" />
-    </item>
-    <item
-        is-multidex="true"
         jar="/Users/dawid/Desktop/EarTrainerAndroid/EarTrainer-Android-App/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
         jumboMode="true"
         optimize="true"
         revision="25.0.2"
         sha1="caff8e51a24901cfc9cd7e1cf83d84f4cb0c103b">
         <dex dex="/Users/dawid/Desktop/EarTrainerAndroid/EarTrainer-Android-App/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_c57b65c34bd3ae3d316705bd0673bff95b39bdb7/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/dawid/.android/build-cache/26ddbf04f5d7f162abd3141b90caea526b3c1fb5/output/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="a936d1131ec6d65a7094eb4ec37ecf6704f9a336">
+        <dex dex="/Users/dawid/Desktop/EarTrainerAndroid/EarTrainer-Android-App/app/build/intermediates/transforms/dex/debug/folders/1000/10/classes_6920bac98780ee36d0c0d792efb491ef2f4e02cd/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/dawid/Desktop/EarTrainerAndroid/EarTrainer-Android-App/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.2"
+        sha1="16ef637f6fa5c1e50cb93c0922f4bb79e8e178b8">
+        <dex dex="/Users/dawid/Desktop/EarTrainerAndroid/EarTrainer-Android-App/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_3dec5fb4d1bef247a70b4358c2129c2b54427ed0/classes.dex" />
     </item>
 
 </items>
